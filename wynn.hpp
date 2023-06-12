@@ -66,7 +66,7 @@ struct	linear{
 	}
 	
 	void	bk(Data<I*C>	&inp,	Data<O*C>	&gin,	Data<I*C>	&gra,	bool	accumulate=false){
-		Eigen::Map<Eigen::Matrix<float,I,O>,Eigen::Aligned64>	mw(g.data,I,O),	mg(g.data,I,O);
+		Eigen::Map<Eigen::Matrix<float,I,O>,Eigen::Aligned64>	mw(w.data,I,O),	mg(g.data,I,O);
 		Eigen::Map<Eigen::Matrix<float,I,C>,Eigen::Aligned64>	mi(inp.data,I,C),	gr(gra.data,I,C);
 		Eigen::Map<Eigen::Matrix<float,O,C>,Eigen::Aligned64>	gi(gin.data,O,C);
 		if(accumulate)	gr.noalias()+=(1/sqrtf(I))*(mw*gi);
