@@ -64,14 +64,16 @@ struct	linear{
 		Eigen::Map<Eigen::Matrix<float,O,C>,Eigen::Aligned64>	mo(out.data,O,C);
 		mo.noalias()=(1/sqrtf(I))*(mw.transpose()*mi);
 	}
-	/*
-	void	bk(Data<R0*C>	&inp,	Data<R1*C>	&gin,	Data<R0*C>	&gra,	bool	accumulate=false){
-		float	alf=1/sqrtf(R0),	alf1=1/sqrtf(R0*C),	bet=0,	bet1=accumulate;
-		cublasGemmEx(handle,CUBLAS_OP_N,CUBLAS_OP_N,R0,C,R1,&alf,wei.data,CUDA_R_32F,R0,gin.data,CUDA_R_32F,R1,&bet1,gra.data,CUDA_R_32F,R0,CUBLAS_COMPUTE_32F_FAST_16BF,CUBLAS_GEMM_DEFAULT);
-		cublasGemmEx(handle,CUBLAS_OP_N,CUBLAS_OP_T,R0,R1,C,&alf1,inp.data,CUDA_R_32F,R0,gin.data,CUDA_R_32F,R1,&bet,weg.data,CUDA_R_32F,R0,CUBLAS_COMPUTE_32F_FAST_16BF,CUBLAS_GEMM_DEFAULT);
-		_opt<<<R0*R1/4/16,16>>>(wei.data,weg.data,wem.data,eta);
+	
+	void	bk(Data<I*C>	&inp,	Data<O*C>	&gin,	Data<I*C>	&gra,	bool	accumulate=false){
+		Eigen::Map<Eigen::Matrix<float,I,O>,Eigen::Aligned64>	mw(g.data,I,O),	mg(g.data,I,O);
+		Eigen::Map<Eigen::Matrix<float,I,C>,Eigen::Aligned64>	mi(inp.data,I,C),	gr(gra.data,I,C);
+		Eigen::Map<Eigen::Matrix<float,O,C>,Eigen::Aligned64>	gi(gin.data,O,C);
+		if(accumulate)	gr.noalias()+=(1/sqrtf(I))*(mw*gi);
+		else	gr.noalias()=(1/sqrtf(I))*(mw*gi);
+		mg.noalias()=(1/sqrtf(I*C))*(mi*gi.transpose());
+		tiger<I*O>(w.data,g.data,m.data,global.learning_rate);
 	}
-	*/
 };
 template<uint64_t	I,	uint64_t	O,	uint64_t	C>
 Data<I*O>	linear<I,O,C>::g;

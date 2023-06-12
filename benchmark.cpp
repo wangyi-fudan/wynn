@@ -16,17 +16,17 @@ void	benchmark_tiger(void){
 
 template<uint64_t	N,	uint64_t	M>
 void	benchmark_linear(void){
-	Data<N*1024>	inp,out;	linear<N,N,1024>	w;	inp.rand();
+	Data<N*N>	inp,out,gra;	linear<N,N,N>	w;	inp.rand();
 	timeval	beg,	end;
 	gettimeofday(&beg,NULL);
-	for(size_t	i=0;	i<M;	i++)	w.fw(inp,out);
+	for(size_t	i=0;	i<M;	i++){	w.fw(inp,out);	w.bk(inp,out,gra);	}
 	gettimeofday(&end,NULL);
 	double	t=end.tv_sec-beg.tv_sec+1e-6*(end.tv_usec-beg.tv_usec);
-	cerr<<"linear\t"<<2.0*N*N*1024/t/1024/1024/1024*M<<" G\n";
+	cerr<<"linear\t"<<6.0*N*N*N/t/1024/1024/1024*M<<" G\n";
 }
 
 int	main(int	ac,	char	**av){
 	benchmark_tiger<0x10000,0x100000>();
-	benchmark_linear<0x200,0x10000>();
+	benchmark_linear<0x200,0x1000>();
 	return	0;
 }
